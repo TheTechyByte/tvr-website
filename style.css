@@ -16,7 +16,7 @@
 }
 
 html, body {
-    overflow-x: hidden; /* Prevents horizontal scroll */
+    overflow-x: hidden; 
     width: 100%;
 }
 
@@ -29,7 +29,6 @@ body {
 }
 
 /* ================= BACKGROUND ANIMATIONS ================= */
-/* Changed to 'fixed' so they don't stretch the page height */
 .bg-shape {
     position: fixed; 
     border-radius: 50%;
@@ -202,6 +201,24 @@ nav {
     max-width: 800px;
     margin: 0 auto 40px;
     color: #555;
+}
+
+/* App Coming Soon Badge */
+.app-coming-soon {
+    display: inline-block;
+    margin-top: 35px;
+    padding: 10px 24px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    color: #555;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+}
+
+.app-coming-soon strong {
+    color: var(--primary);
 }
 
 /* ================= SECTIONS & CARDS ================= */
@@ -378,18 +395,49 @@ footer {
     background-color: #222; 
     color: #aaa; 
     text-align: center; 
-    padding: 30px 20px; 
+    padding: 40px 20px 30px; 
     font-size: 14px;
     margin: 0;
     width: 100%;
     display: block;
 }
 
-/* This forces the paragraph inside the footer to have zero margin, 
-   ensuring the page stops precisely at the text */
+.footer-container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
 footer p {
     margin: 0;
     padding: 0;
+}
+
+.contact-email {
+    font-size: 1.05rem;
+    color: #eeeeee;
+}
+
+/* Makes the email stand out in your magenta color and highlights white on hover */
+.contact-email a {
+    color: var(--secondary);
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.contact-email a:hover {
+    color: var(--text-light);
+    text-decoration: underline;
+}
+
+.copyright {
+    font-size: 0.9rem;
+    opacity: 0.6;
+    margin-top: 10px;
 }
 
 /* ================= SCROLL ANIMATIONS ================= */
@@ -414,6 +462,7 @@ footer p {
 .delay-2 { animation-delay: 0.3s; }
 .delay-3 { animation-delay: 0.5s; }
 .delay-4 { animation-delay: 0.7s; }
+.delay-5 { animation-delay: 0.9s; } /* App badge delay */
 
 @keyframes fadeUp {
     to { opacity: 1; transform: translateY(0); }
@@ -453,6 +502,9 @@ footer p {
     .hero-cta { display: flex; flex-direction: column; gap: 15px; }
     .btn-outline { margin-left: 0; }
     .btn-large { font-size: 1rem; padding: 15px 25px; }
+
+    /* Resize App Badge for Mobile */
+    .app-coming-soon { font-size: 0.85rem; padding: 8px 16px; margin-top: 25px; }
     
     .text-card { padding: 25px; }
     .feature-block { padding: 30px 20px; }
