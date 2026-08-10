@@ -1,125 +1,684 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRUEVNDR | Discover Hidden Local Businesses</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>TrueVndr | Local Discovery Platform for Vendors</title>
+    <meta name="description" content="Join TrueVndr to make your products go public in your city instantly. No followers needed, no high ad costs. Post offers and get local walk-ins.">
+    
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons for premium SVG icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#7B2C3D',
+                            light: '#D35A7C',
+                            50: '#Fdf2f5',
+                            100: '#Fbe5eb',
+                            900: '#4A1723'
+                        }
+                    },
+                    boxShadow: {
+                        'premium': '0 10px 40px -10px rgba(123, 44, 61, 0.15)',
+                        'premium-hover': '0 20px 40px -10px rgba(123, 44, 61, 0.25)',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'spin-slow': 'spin 3s linear infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Styles for interactions and polish */
+        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+        
+        /* Glassmorphism Header */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(123, 44, 61, 0.08);
+        }
+
+        /* Mobile Menu Transition */
+        #mobile-menu {
+            transform-origin: top;
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+        }
+        #mobile-menu.menu-hidden {
+            opacity: 0;
+            transform: scaleY(0.95);
+            visibility: hidden;
+            pointer-events: none;
+        }
+        #mobile-menu.menu-visible {
+            opacity: 1;
+            transform: scaleY(1);
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* Scroll Reveal Utility */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* SVG blob background */
+        .bg-blob {
+            position: absolute; width: 600px; height: 600px;
+            background: linear-gradient(135deg, #D35A7C 0%, #7B2C3D 100%);
+            filter: blur(80px); opacity: 0.15; border-radius: 50%; z-index: -1;
+        }
+        
+        /* Hide scrollbar for horizontal scroll areas but allow functionality */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body>
+<!-- Initial overflow-hidden prevents scrolling while loader is active -->
+<body class="bg-slate-50 text-slate-800 overflow-x-hidden overflow-y-hidden">
 
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
-    <div class="bg-shape shape-3"></div>
-
-    <nav>
-        <div class="logo">TRUE<span>VNDR</span></div>
-        <ul class="nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#problem">The Gap</a></li>
-            <li><a href="#solution">Our Solution</a></li>
-            <li><a href="https://forms.gle/GjNxpeiN18MusvrB7" target="_blank" class="btn-nav">List Your Business</a></li>
-        </ul>
-    </nav>
-
-    <header id="home" class="hero">
-        <div class="hero-content">
-            <span class="badge animate-stagger delay-1">Visual & City-Based Exploration</span>
-            <h1 class="animate-stagger delay-2">Discover Hidden <br><span class="gradient-text">Local Businesses</span></h1>
-            <p class="animate-stagger delay-3">TrueVndr is a local discovery platform designed to help people discover hidden local businesses around them through visual content, personalized feeds, and city-based exploration.</p>
-            
-            <div class="hero-cta animate-stagger delay-4">
-                <a href="#problem" class="btn">Learn More</a>
-                <a href="https://forms.gle/GjNxpeiN18MusvrB7" target="_blank" class="btn btn-outline">Register as a Vendor</a>
+    <!-- Global Loading Screen -->
+    <div id="global-loader" class="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center transition-opacity duration-700 ease-in-out">
+        <div class="relative flex flex-col items-center">
+            <!-- Pulsing/Bouncing Logo -->
+            <div class="animate-bounce-slow mb-6 relative">
+                <!-- Glow effect behind logo -->
+                <div class="absolute inset-0 bg-brand-light opacity-20 blur-xl rounded-full"></div>
+                <img src="Screenshot 2026-07-26 202615.png" alt="TrueVndr Loading" class="w-24 h-24 md:w-28 md:h-28 object-cover rounded-full shadow-2xl relative z-10">
             </div>
+            <!-- Loading Indicator Text & Dots -->
+            <div class="flex items-center gap-2 text-brand-dark font-bold tracking-[0.2em] uppercase text-xs md:text-sm">
+                <div class="w-2 h-2 rounded-full bg-brand-light animate-ping"></div>
+                Initializing
+                <div class="w-2 h-2 rounded-full bg-brand-light animate-ping" style="animation-delay: 0.3s"></div>
+            </div>
+        </div>
+    </div>
 
-            <div class="app-coming-soon animate-stagger delay-5">
-                📱 Mobile App coming soon on <strong>Play Store</strong> & <strong>App Store</strong>
+    <!-- Navigation -->
+    <header class="fixed w-full top-0 z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <a href="#" class="flex-shrink-0 flex items-center cursor-pointer transition-transform hover:scale-105 duration-300 z-50">
+                    <img src="Screenshot 2026-07-26 202615.png" alt="TrueVndr Logo" class="w-12 h-12 md:w-14 md:h-14 object-cover rounded-full shadow-md">
+                </a>
+                
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex items-center gap-8">
+                    <a href="#problem" class="text-slate-600 hover:text-brand-dark font-medium transition-colors">The Problem</a>
+                    <a href="#solution" class="text-slate-600 hover:text-brand-dark font-medium transition-colors">How We Help</a>
+                    <a href="#benefits" class="text-slate-600 hover:text-brand-dark font-medium transition-colors">Benefits</a>
+                </nav>
+
+                <!-- Desktop CTA -->
+                <div class="hidden md:flex z-50">
+                    <a href="#join" class="bg-brand-dark hover:bg-brand-light text-white px-6 py-2.5 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-premium-hover">
+                        Join as Vendor
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center z-50">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-brand-dark focus:outline-none p-2 bg-slate-100 rounded-lg">
+                        <i class="ph ph-list text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Dropdown -->
+        <div id="mobile-menu" class="menu-hidden md:hidden absolute top-20 left-0 w-full bg-white/95 backdrop-blur-xl border-b border-slate-100 shadow-xl pb-6">
+            <div class="px-4 pt-4 pb-2 space-y-2">
+                <a href="#problem" class="block text-slate-700 font-medium py-3 px-4 rounded-lg hover:bg-slate-50 mobile-link">The Problem</a>
+                <a href="#solution" class="block text-slate-700 font-medium py-3 px-4 rounded-lg hover:bg-slate-50 mobile-link">How We Help</a>
+                <a href="#benefits" class="block text-slate-700 font-medium py-3 px-4 rounded-lg hover:bg-slate-50 mobile-link">Benefits</a>
+                <div class="pt-4 px-2">
+                    <a href="#join" class="block w-full bg-brand-dark text-white text-center rounded-xl font-semibold py-3.5 mobile-link shadow-md">Join as Vendor</a>
+                </div>
             </div>
         </div>
     </header>
 
-    <section id="problem" class="text-section">
-        <span class="sub-heading animate-on-scroll">The Challenge</span>
-        <h2 class="animate-on-scroll">Why We Need TRUEVNDR</h2>
-        <div class="content-grid">
-            <div class="text-card animate-on-scroll card-left">
-                <h3>The Vendor Struggle</h3>
-                <p>Today, millions of local vendors in India — including clothing stores, cafes, salons, bakeries, tattoo studios, boutiques, and lifestyle businesses — struggle with digital visibility. Most small businesses rely only on Instagram pages, word-of-mouth marketing, or expensive marketplace platforms that are not designed for local discovery.</p>
-            </div>
-            <div class="text-card animate-on-scroll card-right">
-                <h3>The User Need</h3>
-                <p>At the same time, users are actively looking for local fashion finds, trending cafes, hidden gems, nearby services, and unique stores in their cities. However, there is currently no dedicated platform focused purely on discovering local businesses in a visual, social, and city-first way.</p>
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-16 md:pt-40 md:pb-24 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="bg-blob top-0 right-[-100px] md:right-0"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+                <!-- Text Content -->
+                <div class="max-w-2xl mx-auto lg:mx-0 text-center lg:text-left animate-fade-in-up">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-50 text-brand-dark font-semibold text-xs md:text-sm mb-6 border border-brand-100">
+                        <span class="relative flex h-2 w-2 md:h-2.5 md:w-2.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-light opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 md:h-2.5 md:w-2.5 bg-brand-dark"></span>
+                        </span>
+                        Revolutionizing Local Commerce
+                    </div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-tight mb-6 tracking-tight">
+                        Make your products go public <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-dark to-brand-light">instantly.</span>
+                    </h1>
+                    <p class="text-base md:text-lg text-slate-600 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                        No waiting for followers. No expensive Instagram ads. TrueVndr connects your local shop directly with customers in your city actively looking for what you sell.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center lg:justify-start">
+                        <a href="#join" class="w-full sm:w-auto bg-brand-dark hover:bg-brand-light text-white px-8 py-4 rounded-xl font-bold text-center transition-all duration-300 shadow-premium hover:shadow-premium-hover flex items-center justify-center gap-2 text-lg">
+                            Register Your Shop
+                            <i class="ph ph-arrow-right font-bold"></i>
+                        </a>
+                        <a href="#how-it-works" class="w-full sm:w-auto bg-white border-2 border-slate-200 hover:border-brand-dark text-slate-700 px-8 py-4 rounded-xl font-bold text-center transition-all duration-300 flex items-center justify-center gap-2 text-lg">
+                            See How it Works
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Hero Graphic (Abstract UI Mockup) -->
+                <div class="relative w-full max-w-[340px] md:max-w-md mx-auto animate-fade-in-up mt-8 lg:mt-0" style="animation-delay: 0.2s;">
+                    <div class="relative w-full aspect-[4/5] bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col">
+                        <!-- Mock App Header -->
+                        <div class="p-4 md:p-5 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="ph-fill ph-map-pin text-brand-dark text-xl md:text-2xl"></i>
+                                <span class="font-bold text-sm md:text-base">Discover Local</span>
+                            </div>
+                            <!-- Mock User Avatar -->
+                            <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden border border-slate-300">
+                                <i class="ph-fill ph-user text-slate-400 text-lg"></i>
+                            </div>
+                        </div>
+                        <!-- Mock App Body -->
+                        <div class="p-4 md:p-5 flex-1 bg-slate-50 relative hide-scrollbar overflow-y-auto">
+                            <div class="space-y-4">
+                                <!-- Search bar with placeholder -->
+                                <div class="w-full h-10 bg-white rounded-lg shadow-sm border border-slate-100 flex items-center px-4">
+                                    <i class="ph ph-magnifying-glass text-slate-400 text-lg"></i>
+                                    <span class="text-xs text-slate-400 ml-2">Search in Nagpur...</span>
+                                </div>
+
+                                <!-- Offer Card 1: Sitabuldi Kicks -->
+                                <div class="bg-white p-3 md:p-4 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden transition-transform hover:-translate-y-1 duration-300 cursor-pointer">
+                                    <div class="absolute top-0 right-0 bg-brand-light text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded-bl-lg">20% OFF</div>
+                                    <div class="flex gap-3 md:gap-4">
+                                        <div class="w-14 h-14 md:w-16 md:h-16 bg-brand-50 rounded-lg flex items-center justify-center text-brand-light shrink-0">
+                                            <i class="ph ph-sneaker text-2xl md:text-3xl"></i>
+                                        </div>
+                                        <div class="flex-1 py-1 flex flex-col justify-center">
+                                            <h4 class="font-bold text-slate-800 text-xs md:text-sm leading-tight mb-1">Sitabuldi Kicks</h4>
+                                            <p class="text-[10px] md:text-xs text-slate-500 mb-1.5 line-clamp-1">Premium sneakers & casuals</p>
+                                            <div class="flex items-center gap-1 text-[9px] md:text-[10px] font-semibold text-brand-light">
+                                                <i class="ph-fill ph-map-pin"></i> Sitabuldi • 1.2 km away
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Offer Card 2: Dharampeth Ethnic -->
+                                <div class="bg-white p-3 md:p-4 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden transition-transform hover:-translate-y-1 duration-300 cursor-pointer">
+                                    <div class="absolute top-0 right-0 bg-brand-dark text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded-bl-lg">NEW ARRIVAL</div>
+                                    <div class="flex gap-3 md:gap-4">
+                                        <div class="w-14 h-14 md:w-16 md:h-16 bg-slate-100 rounded-lg flex items-center justify-center text-slate-500 shrink-0">
+                                            <i class="ph ph-t-shirt text-2xl md:text-3xl"></i>
+                                        </div>
+                                        <div class="flex-1 py-1 flex flex-col justify-center">
+                                            <h4 class="font-bold text-slate-800 text-xs md:text-sm leading-tight mb-1">Dharampeth Ethnic</h4>
+                                            <p class="text-[10px] md:text-xs text-slate-500 mb-1.5 line-clamp-1">Festive kurtas & designer dresses</p>
+                                            <div class="flex items-center gap-1 text-[9px] md:text-[10px] font-semibold text-brand-dark">
+                                                <i class="ph-fill ph-map-pin"></i> Dharampeth • 3.5 km away
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Decorative Elements (Hidden on tiny screens) -->
+                    <div class="hidden sm:flex absolute -bottom-6 -left-6 bg-brand-dark text-white p-4 rounded-2xl shadow-xl items-center gap-4 border-4 border-slate-50 z-10">
+                        <div class="bg-white/20 p-2 rounded-lg"><i class="ph ph-users-three text-2xl"></i></div>
+                        <div>
+                            <p class="text-xs text-brand-100 font-medium">Customer Walk-ins</p>
+                            <p class="font-bold text-xl">+340%</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="solution" class="highlight-section">
-        <span class="sub-heading animate-on-scroll">The Ecosystem</span>
-        <h2 class="animate-on-scroll">How TrueVndr Solves This</h2>
-        <p class="lead-text animate-on-scroll">TrueVndr creates a discovery ecosystem where vendors can showcase their products, services, food, and brand identity through visual posts, while users can explore businesses in categories like Fashion, Food, and Lifestyle & Services.</p>
-        
-        <div class="combination-grid animate-on-scroll">
-            <div class="combo-item">📱 Social-style discovery</div>
-            <div class="combo-item">📍 Local exploration</div>
-            <div class="combo-item">🔍 Search-driven discovery</div>
-            <div class="combo-item">✨ Creator-style engagement</div>
-        </div>
-    </section>
-
-    <section id="features" class="features">
-        <div class="features-wrapper">
-            <div class="feature-block user-side animate-on-scroll card-left">
-                <h2>Users Can:</h2>
-                <ul class="stagger-list">
-                    <li>Discover nearby businesses</li>
-                    <li>Search products and services</li>
-                    <li>Follow vendors</li>
-                    <li>Save places</li>
-                    <li>Explore their city through curated content</li>
-                </ul>
+    <!-- The Problem Section -->
+    <section id="problem" class="py-16 md:py-24 bg-white border-y border-slate-100 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12 md:mb-16 reveal">
+                <h2 class="text-brand-dark font-bold tracking-wide uppercase text-xs md:text-sm mb-3">The Problem</h2>
+                <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 md:mb-6 leading-tight">Great products, invisible to the city.</h3>
+                <p class="text-base md:text-lg text-slate-600">
+                    You have amazing inventory. But customers looking for clothes, jewellery, or home goods don't know you exist. You're forced to rely on systems that are rigged against local shops.
+                </p>
             </div>
-            <div class="feature-block vendor-side animate-on-scroll card-right">
-                <h2>Vendors Can:</h2>
-                <ul class="stagger-list">
-                    <li>Create a digital storefront</li>
-                    <li>Upload content</li>
-                    <li>Build followers</li>
-                    <li>Increase visibility</li>
-                    <li>Attract local walk-ins organically</li>
-                </ul>
-            </div>
-        </div>
-    </section>
 
-    <section class="vision-section animate-on-scroll">
-        <div class="vision-content">
-            <h2>Our Differentiator & Vision</h2>
-            <p>Unlike traditional marketplace platforms, TrueVndr is not focused on logistics or inventory management. Instead, the platform focuses on helping local businesses get discovered digitally in a simple and scalable way.</p>
-            <div class="vision-quote">
-                "The long-term vision is to become India’s leading local business discovery ecosystem — helping users discover the best businesses around them while empowering small vendors with digital visibility and growth opportunities."
+            <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+                <!-- Problem 1 -->
+                <div class="bg-slate-50 rounded-2xl p-6 md:p-8 border border-slate-100 reveal hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center mb-6">
+                        <i class="ph ph-instagram-logo text-2xl"></i>
+                    </div>
+                    <h4 class="text-lg md:text-xl font-bold text-slate-900 mb-3">The "Follower" Trap</h4>
+                    <p class="text-sm md:text-base text-slate-600">
+                        Building an audience on social media takes months. If you don't have thousands of followers, nobody sees your daily updates or new arrivals.
+                    </p>
+                </div>
+                <!-- Problem 2 -->
+                <div class="bg-slate-50 rounded-2xl p-6 md:p-8 border border-slate-100 reveal delay-100 hover:shadow-lg transition-shadow">
+                    <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mb-6">
+                        <i class="ph ph-currency-circle-dollar text-2xl"></i>
+                    </div>
+                    <h4 class="text-lg md:text-xl font-bold text-slate-900 mb-3">Expensive Ads</h4>
+                    <p class="text-sm md:text-base text-slate-600">
+                        Facebook and Instagram ads, or paying local influencers, costs a fortune. The price of customer acquisition is simply too high for local margins.
+                    </p>
+                </div>
+                <!-- Problem 3 -->
+                <div class="bg-slate-50 rounded-2xl p-6 md:p-8 border border-slate-100 reveal delay-200 hover:shadow-lg transition-shadow sm:col-span-2 md:col-span-1">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
+                        <i class="ph ph-magnifying-glass text-2xl"></i>
+                    </div>
+                    <h4 class="text-lg md:text-xl font-bold text-slate-900 mb-3">Generic Search</h4>
+                    <p class="text-sm md:text-base text-slate-600">
+                        Google helps people find a store's address, but it doesn't show them what's *inside* your shop right now. It wasn't built for local product discovery.
+                    </p>
+                </div>
             </div>
         </div>
     </section>
 
-<section id="join-vendor" class="contact animate-on-scroll scale-in">
-        <div class="contact-container">
-            <span class="sub-heading">Grow Your Business Digitally</span>
-            <h2>Claim Your Digital Storefront</h2>
-            <p>Stop relying purely on word-of-mouth. Register at TRUEVNDR to get discovered by thousands of local customers actively seeking your services. Click the button below to fill out our vendor application form.</p>
-            
-            <a href="https://forms.gle/GjNxpeiN18MusvrB7" target="_blank" class="btn btn-large btn-pulse">Open Vendor Application Form 🚀</a>
+    <!-- The Solution (TrueVndr) -->
+    <section id="solution" class="py-16 md:py-24 bg-slate-900 text-white relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-brand-dark/20 to-transparent"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-brand-light/20 blur-3xl rounded-full"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-12 md:gap-16 items-center">
+                <div class="reveal text-center lg:text-left">
+                    <h2 class="text-brand-light font-bold tracking-wide uppercase text-xs md:text-sm mb-3">The Solution</h2>
+                    <h3 class="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 md:mb-6 leading-tight">
+                        Designed strictly for local discovery.
+                    </h3>
+                    <p class="text-base md:text-lg text-slate-300 mb-8 max-w-xl mx-auto lg:mx-0">
+                        TrueVndr flips the model. We don't care about followers or likes. We connect high-intent local buyers directly with the products sitting on your shelves.
+                    </p>
+
+                    <ul class="space-y-6 text-left max-w-xl mx-auto lg:mx-0">
+                        <li class="flex gap-4 items-start">
+                            <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-brand-light/20 flex items-center justify-center mt-0.5 shrink-0">
+                                <i class="ph ph-check text-brand-light text-sm md:text-base font-bold"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-base md:text-lg">Zero Followers Required</h5>
+                                <p class="text-slate-400 text-xs md:text-sm mt-1">Join today, and your products are instantly public to everyone in your city using the app.</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4 items-start">
+                            <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-brand-light/20 flex items-center justify-center mt-0.5 shrink-0">
+                                <i class="ph ph-check text-brand-light text-sm md:text-base font-bold"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-base md:text-lg">Post Live Offers</h5>
+                                <p class="text-slate-400 text-xs md:text-sm mt-1">Running a weekend sale? Post an offer on TrueVndr and drive immediate foot traffic.</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4 items-start">
+                            <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-brand-light/20 flex items-center justify-center mt-0.5 shrink-0">
+                                <i class="ph ph-check text-brand-light text-sm md:text-base font-bold"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-base md:text-lg">No Marketing Costs</h5>
+                                <p class="text-slate-400 text-xs md:text-sm mt-1">Stop draining your budget on expensive social media ads and overpriced influencers.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Comparison Table Graphic with Horizontal Scroll on Mobile -->
+                <div class="bg-slate-800 rounded-2xl border border-slate-700 shadow-2xl overflow-hidden reveal delay-200">
+                    <div class="p-4 md:p-6 border-b border-slate-700 bg-slate-800/50">
+                        <h4 class="font-bold text-center text-sm md:text-base">TrueVndr vs Traditional Platforms</h4>
+                    </div>
+                    
+                    <!-- Scrollable Container -->
+                    <div class="p-4 md:p-6 overflow-x-auto hide-scrollbar w-full">
+                        <div class="min-w-[320px]">
+                            <!-- Table Header -->
+                            <div class="flex justify-between border-b border-slate-700 pb-4 mb-4">
+                                <span class="text-slate-400 font-medium text-xs md:text-sm uppercase tracking-wider">Feature</span>
+                                <div class="flex gap-4 md:gap-8 text-xs md:text-sm font-bold">
+                                    <span class="text-slate-400 w-16 md:w-20 text-center">Facebook</span>
+                                    <span class="text-brand-light w-20 md:w-24 text-center">TrueVndr</span>
+                                </div>
+                            </div>
+                            <!-- Table Rows -->
+                            <div class="space-y-2 md:space-y-4">
+                                <div class="flex justify-between items-center group hover:bg-slate-700/30 p-2 md:p-3 rounded-lg transition-colors">
+                                    <span class="text-slate-300 text-sm md:text-base">Audience Type</span>
+                                    <div class="flex gap-4 md:gap-8">
+                                        <span class="text-slate-500 text-xs md:text-sm w-16 md:w-20 text-center">Global</span>
+                                        <span class="text-white font-semibold text-xs md:text-sm w-20 md:w-24 text-center bg-brand-dark/20 py-1 rounded">Local City</span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center group hover:bg-slate-700/30 p-2 md:p-3 rounded-lg transition-colors">
+                                    <span class="text-slate-300 text-sm md:text-base">Visibility req.</span>
+                                    <div class="flex gap-4 md:gap-8">
+                                        <span class="text-slate-500 text-xs md:text-sm w-16 md:w-20 text-center">Followers</span>
+                                        <span class="text-brand-light font-semibold text-xs md:text-sm w-20 md:w-24 text-center bg-brand-dark/20 py-1 rounded">Instant</span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center group hover:bg-slate-700/30 p-2 md:p-3 rounded-lg transition-colors">
+                                    <span class="text-slate-300 text-sm md:text-base">Customer Cost</span>
+                                    <div class="flex gap-4 md:gap-8">
+                                        <span class="text-red-400 text-xs md:text-sm w-16 md:w-20 text-center font-bold">Very High</span>
+                                        <span class="text-emerald-400 font-semibold text-xs md:text-sm w-20 md:w-24 text-center bg-brand-dark/20 py-1 rounded">Very Low</span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center group hover:bg-slate-700/30 p-2 md:p-3 rounded-lg transition-colors">
+                                    <span class="text-slate-300 text-sm md:text-base">Core Purpose</span>
+                                    <div class="flex gap-4 md:gap-8">
+                                        <span class="text-slate-500 text-xs md:text-sm w-16 md:w-20 text-center">Social</span>
+                                        <span class="text-white font-semibold text-xs md:text-sm w-20 md:w-24 text-center bg-brand-dark/20 py-1 rounded">Sales</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <footer>
-        <div class="footer-container">
-            <p class="contact-email">Have questions? Contact us: <a href="mailto:truevndr@gmail.com">truevndr@gmail.com</a></p>
-            <p class="copyright">&copy; 2026 TRUEVNDR. India's Leading Local Business Discovery Ecosystem. All rights reserved.</p>
+    <!-- How it Works (Steps) -->
+    <section id="how-it-works" class="py-16 md:py-24 bg-slate-50 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12 md:mb-16 reveal">
+                <h2 class="text-brand-dark font-bold tracking-wide uppercase text-xs md:text-sm mb-3">Simple Process</h2>
+                <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900">How to get walk-ins</h3>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-10 md:gap-8 relative">
+                <!-- Connecting Line (Desktop) -->
+                <div class="hidden md:block absolute top-[40px] left-[16%] right-[16%] h-0.5 bg-slate-200 z-0"></div>
+
+                <!-- Step 1 -->
+                <div class="relative z-10 flex flex-col items-center text-center reveal">
+                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white border-2 border-brand-light text-brand-dark font-bold text-xl md:text-2xl flex items-center justify-center mb-4 md:mb-6 shadow-lg">
+                        1
+                    </div>
+                    <h4 class="text-lg md:text-xl font-bold text-slate-900 mb-2">Create Profile</h4>
+                    <p class="text-sm md:text-base text-slate-600 max-w-[250px]">Takes 2 minutes. Add your shop details, location, and operating hours.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative z-10 flex flex-col items-center text-center reveal delay-100">
+                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-brand-dark text-white font-bold text-xl md:text-2xl flex items-center justify-center mb-4 md:mb-6 shadow-premium">
+                        2
+                    </div>
+                    <h4 class="text-lg md:text-xl font-bold text-slate-900 mb-2">Post Products & Offers</h4>
+                    <p class="text-sm md:text-base text-slate-600 max-w-[250px]">Upload photos of what's in store. Instantly broadcast discounts to the city.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative z-10 flex flex-col items-center text-center reveal delay-200">
+                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white border-2 border-brand-light text-brand-dark font-bold text-xl md:text-2xl flex items-center justify-center mb-4 md:mb-6 shadow-lg">
+                        3
+                    </div>
+                    <h4 class="text-lg md:text-xl font-bold text-slate-900 mb-2">Welcome Customers</h4>
+                    <p class="text-sm md:text-base text-slate-600 max-w-[250px]">Local buyers see your items on their TrueVndr feed and walk directly into your shop.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Join / Registration Form (Enhanced with Google Forms) -->
+    <section id="join" class="py-16 md:py-24 bg-white relative">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-brand-50 rounded-3xl p-6 md:p-12 border border-brand-100 shadow-xl relative overflow-hidden reveal">
+                <!-- Decorative Circle -->
+                <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-brand-light opacity-10 rounded-full blur-3xl"></div>
+                
+                <div class="grid lg:grid-cols-2 gap-10 md:gap-12 items-center relative z-10">
+                    <!-- Left Side Text -->
+                    <div class="text-center lg:text-left">
+                        <h3 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4 leading-tight">Start Growing Your Local Business Today</h3>
+                        <p class="text-sm md:text-base text-slate-700 mb-6">
+                            Join the TRUEVNDR community and secure your digital storefront for life with an exclusive launch offer.
+Register now for free.
+                        </p>
+                        <ul class="space-y-3 mb-8 text-left max-w-[280px] mx-auto lg:mx-0">
+                            <li class="flex items-center gap-3 text-slate-700 font-medium">
+                                <i class="ph-fill ph-check-circle text-brand-light text-xl"></i> No credit card required
+                            </li>
+                            <li class="flex items-center gap-3 text-slate-700 font-medium">
+                                <i class="ph-fill ph-check-circle text-brand-light text-xl"></i> Fast 2-minute setup
+                            </li>
+                            <li class="flex items-center gap-3 text-slate-700 font-medium">
+                                <i class="ph-fill ph-check-circle text-brand-light text-xl"></i> Dedicated support
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Right Side: Beautiful Google Form CTA -->
+                    <div class="bg-white p-6 md:p-10 rounded-3xl shadow-xl border border-slate-100 flex flex-col justify-center items-center text-center relative overflow-hidden">
+                        <!-- Top decorative border -->
+                        <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-dark to-brand-light"></div>
+                        
+                        <!-- Google Forms Icon representation -->
+                        <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-6 shadow-sm border border-blue-100">
+                            <i class="ph-fill ph-file-text text-4xl"></i>
+                        </div>
+                        
+                        <h4 class="text-2xl font-bold text-slate-900 mb-3">Partner Application</h4>
+                        <p class="text-slate-600 mb-8 max-w-xs text-sm md:text-base">
+                            We use Google Forms to securely collect your business details. It takes less than 2 minutes to complete.
+                        </p>
+                        
+                        <!-- The Google Form Link -->
+                        <a href="https://forms.gle/GjNxpeiN18MusvrB7" target="_blank" rel="noopener noreferrer" class="w-full bg-brand-dark hover:bg-brand-light text-white font-bold py-4 rounded-xl transition-all shadow-md hover:shadow-premium-hover flex items-center justify-center gap-2 text-lg">
+                            Open Registration Form <i class="ph ph-arrow-square-out text-xl"></i>
+                        </a>
+                        
+                        <p class="text-xs text-slate-400 mt-5 flex items-center gap-1.5 font-medium uppercase tracking-wider">
+                            <i class="ph-fill ph-lock-key"></i> Safe & Secure
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 pt-12 md:pt-16 pb-6 md:pb-8 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 md:gap-12 mb-10 md:mb-12">
+                <!-- Brand Column -->
+                <div class="col-span-1 sm:col-span-2">
+                    <a href="#" class="inline-block mb-4 transition-transform hover:scale-105 duration-300">
+                        <img src="Screenshot 2026-07-26 202615.png" alt="TrueVndr Logo" class="w-12 h-12 md:w-14 md:h-14 object-cover rounded-full shadow-lg">
+                    </a>
+                    <p class="text-slate-400 text-sm leading-relaxed max-w-sm mb-4">
+                        The ultimate local discovery platform. Bridging the gap between high-quality local vendors and customers searching for products in their city.
+                    </p>
+                    
+                    <!-- Added Email Contact -->
+                    <a href="mailto:truevndr@gmail.com" class="inline-flex items-center gap-2 text-slate-300 hover:text-brand-light font-medium text-sm mb-6 transition-colors duration-300">
+                        <i class="ph-fill ph-envelope-simple text-xl"></i> truevndr@gmail.com
+                    </a>
+
+                    <div class="flex gap-3 md:gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-brand-dark flex items-center justify-center text-slate-300 transition-colors">
+                            <i class="ph-fill ph-instagram-logo text-lg"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-brand-dark flex items-center justify-center text-slate-300 transition-colors">
+                            <i class="ph-fill ph-twitter-logo text-lg"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-brand-dark flex items-center justify-center text-slate-300 transition-colors">
+                            <i class="ph-fill ph-facebook-logo text-lg"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links Column 1 -->
+                <div>
+                    <h4 class="text-white font-bold mb-3 md:mb-4">Platform</h4>
+                    <ul class="space-y-2 md:space-y-3">
+                        <li><a href="#how-it-works" class="text-slate-400 hover:text-brand-light text-sm transition-colors">How it Works</a></li>
+                        <li><a href="#problem" class="text-slate-400 hover:text-brand-light text-sm transition-colors">Vendor Benefits</a></li>
+                        <li><a href="#join" class="text-slate-400 hover:text-brand-light text-sm transition-colors">Pricing</a></li>
+                        <li><a href="#join" class="text-slate-400 hover:text-brand-light text-sm transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Links Column 2 -->
+                <div>
+                    <h4 class="text-white font-bold mb-3 md:mb-4">Legal & Support</h4>
+                    <ul class="space-y-2 md:space-y-3">
+                        <li><a href="mailto:truevndr@gmail.com" class="text-slate-400 hover:text-brand-light text-sm transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-brand-light text-sm transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-brand-light text-sm transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="text-slate-400 hover:text-brand-light text-sm transition-colors">Vendor Guidelines</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-6 md:pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+                <p class="text-slate-500 text-xs md:text-sm">
+                    &copy; <span id="year"></span> TrueVndr. All rights reserved.
+                </p>
+                <div class="text-slate-500 text-xs md:text-sm flex items-center gap-1">
+                    Made with <i class="ph-fill ph-heart text-brand-light"></i> for Local Businesses
+                </div>
+            </div>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- JavaScript Interactions -->
+    <script>
+        // Set dynamic year in footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // --- GLOBAL LOADER LOGIC ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('global-loader');
+            
+            // Artificial slight delay so the user can enjoy the loading animation
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    // Restore body scrolling
+                    document.body.classList.remove('overflow-y-hidden');
+                }, 700); // Matches the CSS transition duration
+                
+            }, 800); 
+        });
+
+        // Improved Mobile Menu Toggle with Animation
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+        const icon = mobileMenuBtn.querySelector('i');
+
+        function toggleMenu() {
+            if (mobileMenu.classList.contains('menu-hidden')) {
+                // Open menu
+                mobileMenu.classList.remove('menu-hidden');
+                mobileMenu.classList.add('menu-visible');
+                icon.classList.remove('ph-list');
+                icon.classList.add('ph-x');
+                mobileMenuBtn.classList.add('bg-brand-50', 'text-brand-dark');
+                mobileMenuBtn.classList.remove('bg-slate-100', 'text-slate-600');
+            } else {
+                // Close menu
+                mobileMenu.classList.remove('menu-visible');
+                mobileMenu.classList.add('menu-hidden');
+                icon.classList.remove('ph-x');
+                icon.classList.add('ph-list');
+                mobileMenuBtn.classList.remove('bg-brand-50', 'text-brand-dark');
+                mobileMenuBtn.classList.add('bg-slate-100', 'text-slate-600');
+            }
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMenu);
+
+        // Close mobile menu on link click
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if(mobileMenu.classList.contains('menu-visible')) {
+                    toggleMenu();
+                }
+            });
+        });
+
+        // Close menu if clicking outside
+        document.addEventListener('click', (e) => {
+            if (mobileMenu.classList.contains('menu-visible') && !mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                toggleMenu();
+            }
+        });
+
+        // Sticky Navbar Glass Effect
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-md');
+            } else {
+                header.classList.remove('shadow-md');
+            }
+        });
+
+        // Scroll Reveal Animation (Intersection Observer)
+        const revealElements = document.querySelectorAll('.reveal');
+        
+        const revealCallback = (entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target); // Stop observing once revealed
+                }
+            });
+        };
+
+        const revealOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -30px 0px"
+        };
+
+        const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
+        
+        revealElements.forEach(el => {
+            revealObserver.observe(el);
+        });
+    </script>
 </body>
 </html>
